@@ -1,0 +1,39 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.tox/
+.coverage
+coverage.xml
+htmlcov/
+
+# Package outputs
+build/
+dist/
+*.whl
+
+# Local runtime output (may expose live cluster details)
+demo-output/
+*.jsonl
+*.log
+cluster-snapshot*.json
+inventory*.json
+triage*.json
+fleet*.json
+report*.html
+!docs/synthetic-demo-dashboard.html
+
+# Credentials / local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+kubeconfig*
+.kube/
+.DS_Store
+.idea/
+.vscode/

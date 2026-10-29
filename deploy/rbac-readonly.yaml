@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubernetes-doctor
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubernetes-doctor-readonly
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "pods", "services", "persistentvolumeclaims", "persistentvolumes", "events"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["get", "list"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "networkpolicies"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-doctor-readonly
+subjects:
+  - kind: ServiceAccount
+    name: kubernetes-doctor
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: kubernetes-doctor-readonly
+  apiGroup: rbac.authorization.k8s.io

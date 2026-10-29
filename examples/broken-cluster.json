@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "context": "demo-gpu-cluster",
+  "generated_at": "2026-10-28T12:00:00Z",
+  "collection_errors": [],
+  "nodes": [
+    {"name":"gpu-node-1","labels":{"nvidia.com/gpu.present":"true"},"conditions":[{"type":"Ready","status":"True"}],"allocatable":{"nvidia.com/gpu":"4"},"taints":[]},
+    {"name":"worker-2","conditions":[{"type":"Ready","status":"False","message":"Kubelet stopped posting node status"}],"allocatable":{},"taints":[]}
+  ],
+  "pods": [
+    {"namespace":"training","name":"trainer-0","phase":"Pending","node":null,"labels":{"app":"trainer"},"owners":[],"gpu_requests":{"nvidia.com/gpu":"8"},"conditions":[{"type":"PodScheduled","status":"False","reason":"Unschedulable","message":"0/2 nodes are available: 1 Insufficient nvidia.com/gpu, 1 node(s) had untolerated taint"}],"containers":[]},
+    {"namespace":"web","name":"frontend-6cf-aaa","phase":"Running","node":"worker-2","labels":{"app":"frontend"},"owners":[{"kind":"ReplicaSet","name":"frontend-6cf"}],"conditions":[],"gpu_requests":{},"containers":[{"name":"app","ready":false,"restart_count":9,"waiting_reason":"CrashLoopBackOff","waiting_message":"back-off restarting failed container","last_terminated_reason":"OOMKilled"}]}
+  ],
+  "deployments": [{"namespace":"web","name":"frontend","replicas":2,"available_replicas":0,"owners":[]}],
+  "replica_sets": [{"namespace":"web","name":"frontend-6cf","replicas":2,"available_replicas":0,"owners":[{"kind":"Deployment","name":"frontend"}]}],
+  "services": [{"namespace":"web","name":"frontend","type":"ClusterIP","selector":{"app":"frontend"},"publish_not_ready_addresses":false}],
+  "endpoint_slices": [{"namespace":"web","name":"frontend-j4d","service":"frontend","endpoints":[{"addresses":["10.10.1.4"],"ready":false,"terminating":false,"target_kind":"Pod","target_name":"frontend-6cf-aaa"}]}],
+  "pvcs": [{"namespace":"training","name":"checkpoints","phase":"Pending","storage_class":"fast-csi"}],
+  "events": [{"namespace":"training","object_kind":"Pod","object_name":"trainer-0","reason":"FailedScheduling","message":"Insufficient nvidia.com/gpu","type":"Warning","count":5}]
+}

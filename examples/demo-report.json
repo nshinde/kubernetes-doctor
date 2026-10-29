@@ -1,0 +1,102 @@
+{
+  "context": "demo-gpu-cluster",
+  "complete": true,
+  "findings": [
+    {
+      "id": "CRASHLOOPBACKOFF:Pod/web/frontend-6cf-aaa",
+      "rule": "CRASHLOOPBACKOFF",
+      "severity": "high",
+      "resource": "Pod/web/frontend-6cf-aaa",
+      "summary": "Container app: CrashLoopBackOff",
+      "evidence": [
+        "Waiting reason=CrashLoopBackOff",
+        "back-off restarting failed container"
+      ],
+      "possible_cause": "Application startup failure or invalid configuration",
+      "recommendation": "Inspect container state, previous logs, image and relevant events; fix the underlying cause",
+      "automatic_fix": false
+    },
+    {
+      "id": "GPU_CAPACITY_CONSTRAINT:Pod/training/trainer-0",
+      "rule": "GPU_CAPACITY_CONSTRAINT",
+      "severity": "high",
+      "resource": "Pod/training/trainer-0",
+      "summary": "Pod cannot be scheduled",
+      "evidence": [
+        "0/2 nodes are available: 1 Insufficient nvidia.com/gpu, 1 node(s) had untolerated taint",
+        "GPU requests: {'nvidia.com/gpu': '8'}",
+        "Recent events: FailedScheduling: Insufficient nvidia.com/gpu"
+      ],
+      "possible_cause": "Scheduler reports insufficient GPU capacity on eligible nodes; taints/affinity can also limit eligible nodes",
+      "recommendation": "Check per-node GPU allocatable/claims, NVIDIA/AMD device plugin, taints, affinity and PVCs",
+      "automatic_fix": false
+    },
+    {
+      "id": "NODE_CONDITION:Node/worker-2",
+      "rule": "NODE_CONDITION",
+      "severity": "high",
+      "resource": "Node/worker-2",
+      "summary": "Node Ready=False",
+      "evidence": [
+        "Condition: Ready=False",
+        "Kubelet stopped posting node status"
+      ],
+      "possible_cause": "Node health, resource pressure or network configuration",
+      "recommendation": "Inspect kubelet/node events, node resources and CNI before considering drain/reboot",
+      "automatic_fix": false
+    },
+    {
+      "id": "NO_READY_ENDPOINTS:Service/web/frontend",
+      "rule": "NO_READY_ENDPOINTS",
+      "severity": "high",
+      "resource": "Service/web/frontend",
+      "summary": "Service has no ready EndpointSlice backends",
+      "evidence": [
+        "EndpointSlice endpoints=1, ready=0"
+      ],
+      "possible_cause": "Service selector mismatch, failing readiness probes, or no matching ready pods",
+      "recommendation": "Compare Service selectors with pod labels; inspect pod readiness and EndpointSlices",
+      "automatic_fix": false
+    },
+    {
+      "id": "OOM_KILLED:Pod/web/frontend-6cf-aaa",
+      "rule": "OOM_KILLED",
+      "severity": "high",
+      "resource": "Pod/web/frontend-6cf-aaa",
+      "summary": "Container app was OOMKilled",
+      "evidence": [
+        "restartCount=9",
+        "Termination reason=OOMKilled"
+      ],
+      "possible_cause": "Container exceeded memory limit or experienced severe memory pressure",
+      "recommendation": "Compare memory usage, requests/limits and application allocations; do not simply restart",
+      "automatic_fix": false
+    },
+    {
+      "id": "PVC_NOT_BOUND:PersistentVolumeClaim/training/checkpoints",
+      "rule": "PVC_NOT_BOUND",
+      "severity": "high",
+      "resource": "PersistentVolumeClaim/training/checkpoints",
+      "summary": "PVC phase=Pending",
+      "evidence": [
+        "storageClass=fast-csi"
+      ],
+      "possible_cause": "Storage provisioning or volume binding failure",
+      "recommendation": "Inspect PVC events, StorageClass, CSI controller and available volumes",
+      "automatic_fix": false
+    },
+    {
+      "id": "DEPLOYMENT_UNAVAILABLE:Deployment/web/frontend",
+      "rule": "DEPLOYMENT_UNAVAILABLE",
+      "severity": "medium",
+      "resource": "Deployment/web/frontend",
+      "summary": "Deployment has fewer available replicas than desired",
+      "evidence": [
+        "available=0, desired=2"
+      ],
+      "possible_cause": "Underlying pod failure, scheduling or readiness problem",
+      "recommendation": "Trace Deployment \u2192 ReplicaSet \u2192 Pod, then inspect pod findings",
+      "automatic_fix": false
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# Example only: build/push the Dockerfile and replace REPLACE_WITH_YOUR_IMAGE.
+# For a minimal live demo, prefer running the CLI from a developer workstation.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kdoctor-scan
+  namespace: default
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: kubernetes-doctor
+      restartPolicy: Never
+      containers:
+        - name: kdoctor
+          image: REPLACE_WITH_YOUR_IMAGE
+          imagePullPolicy: IfNotPresent
+          args: ["scan", "--format", "json"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true

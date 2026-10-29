@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "allowed_contexts": [
+    "reactor-demo-staging",
+    "reactor-demo-maintenance"
+  ],
+  "restart_deployments": [
+    "sandbox/demo-api"
+  ],
+  "cordon_nodes": [
+    "gpu-sandbox-bad"
+  ],
+  "uncordon_nodes": [
+    "gpu-sandbox-bad"
+  ]
+}

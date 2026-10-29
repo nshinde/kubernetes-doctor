@@ -1,0 +1,222 @@
+{
+  "context": "reactor-demo-eu-central",
+  "nodes": [
+    {
+      "name": "gpu-eu-a",
+      "labels": {
+        "nvidia.com/gpu.present": "true",
+        "topology.kubernetes.io/zone": "eu"
+      },
+      "allocatable": {
+        "nvidia.com/gpu": "8"
+      },
+      "capacity": {
+        "nvidia.com/gpu": "8"
+      },
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": "KubeletReady",
+          "message": "Kubelet is ready"
+        }
+      ],
+      "taints": [],
+      "unschedulable": false
+    },
+    {
+      "name": "gpu-eu-b",
+      "labels": {
+        "nvidia.com/gpu.present": "true",
+        "topology.kubernetes.io/zone": "eu"
+      },
+      "allocatable": {
+        "nvidia.com/gpu": "8"
+      },
+      "capacity": {
+        "nvidia.com/gpu": "8"
+      },
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": "KubeletReady",
+          "message": "Kubelet is ready"
+        }
+      ],
+      "taints": [],
+      "unschedulable": false
+    },
+    {
+      "name": "gpu-eu-c",
+      "labels": {
+        "nvidia.com/gpu.present": "true",
+        "topology.kubernetes.io/zone": "eu"
+      },
+      "allocatable": {
+        "nvidia.com/gpu": "8"
+      },
+      "capacity": {
+        "nvidia.com/gpu": "8"
+      },
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": "KubeletReady",
+          "message": "Kubelet is ready"
+        }
+      ],
+      "taints": [],
+      "unschedulable": false
+    }
+  ],
+  "pods": [
+    {
+      "namespace": "inference",
+      "name": "world-model-eu-a",
+      "node": "gpu-eu-a",
+      "phase": "Running",
+      "labels": {
+        "app": "world-model"
+      },
+      "owners": [
+        {
+          "kind": "ReplicaSet",
+          "name": "world-model-eu-rs"
+        }
+      ],
+      "gpu_requests": {
+        "nvidia.com/gpu": "2"
+      },
+      "containers": [
+        {
+          "name": "engine",
+          "ready": true,
+          "restart_count": 0
+        }
+      ],
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True"
+        }
+      ],
+      "pvc_claims": [],
+      "node_selector": {},
+      "tolerations": []
+    },
+    {
+      "namespace": "inference",
+      "name": "world-model-eu-b",
+      "node": "gpu-eu-b",
+      "phase": "Running",
+      "labels": {
+        "app": "world-model"
+      },
+      "owners": [
+        {
+          "kind": "ReplicaSet",
+          "name": "world-model-eu-rs"
+        }
+      ],
+      "gpu_requests": {
+        "nvidia.com/gpu": "2"
+      },
+      "containers": [
+        {
+          "name": "engine",
+          "ready": true,
+          "restart_count": 0
+        }
+      ],
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True"
+        }
+      ],
+      "pvc_claims": [],
+      "node_selector": {},
+      "tolerations": []
+    }
+  ],
+  "services": [
+    {
+      "namespace": "inference",
+      "name": "model-server",
+      "type": "ClusterIP",
+      "selector": {
+        "app": "world-model"
+      },
+      "publish_not_ready_addresses": false
+    }
+  ],
+  "endpoint_slices": [
+    {
+      "namespace": "inference",
+      "name": "model-eu-eps",
+      "service": "model-server",
+      "endpoints": [
+        {
+          "target_kind": "Pod",
+          "target_name": "world-model-eu-a",
+          "ready": true,
+          "terminating": false,
+          "addresses": [
+            "10.52.0.11"
+          ]
+        },
+        {
+          "target_kind": "Pod",
+          "target_name": "world-model-eu-b",
+          "ready": true,
+          "terminating": false,
+          "addresses": [
+            "10.52.0.12"
+          ]
+        }
+      ]
+    }
+  ],
+  "deployments": [
+    {
+      "namespace": "inference",
+      "name": "world-model-eu",
+      "replicas": 2,
+      "available_replicas": 2,
+      "owners": []
+    }
+  ],
+  "replica_sets": [
+    {
+      "namespace": "inference",
+      "name": "world-model-eu-rs",
+      "replicas": 2,
+      "available_replicas": 2,
+      "owners": [
+        {
+          "kind": "Deployment",
+          "name": "world-model-eu"
+        }
+      ]
+    }
+  ],
+  "ingresses": [
+    {
+      "namespace": "inference",
+      "name": "world-model-api",
+      "services": [
+        "model-server"
+      ]
+    }
+  ],
+  "network_policies": [],
+  "pvcs": [],
+  "pvs": [],
+  "events": [],
+  "signals": [],
+  "schema_version": 2,
+  "generated_at": "2026-10-28T20:12:00Z",
+  "collection_errors": []
+}

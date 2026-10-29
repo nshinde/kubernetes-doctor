@@ -1,0 +1,11 @@
+{
+  "signals": [
+    {
+      "metric": "gpu_xid_errors",
+      "value": 3,
+      "resource": "Node/gpu-west-a",
+      "source": "dcgm-exporter-fixture",
+      "observed_at": "2026-10-28T20:12:00Z"
+    }
+  ]
+}

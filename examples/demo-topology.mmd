@@ -1,0 +1,20 @@
+flowchart LR
+  n0["Deployment\nfrontend"]
+  n1["Namespace\ntraining"]
+  n2["Namespace\nweb"]
+  n3["Node\ngpu-node-1"]
+  n4["Node\nworker-2"]
+  n5["PVC\ncheckpoints"]
+  n6["Pod\ntrainer-0"]
+  n7["Pod\nfrontend-6cf-aaa"]
+  n8["ReplicaSet\nfrontend-6cf"]
+  n9["Service\nfrontend"]
+  n0 -->|owns| n8
+  n1 -->|contains| n5
+  n1 -->|contains| n6
+  n2 -->|contains| n0
+  n2 -->|contains| n7
+  n2 -->|contains| n8
+  n2 -->|contains| n9
+  n4 -->|schedules| n7
+  n8 -->|owns| n7

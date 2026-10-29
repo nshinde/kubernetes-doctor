@@ -1,0 +1,136 @@
+{
+  "context": "reactor-demo-us-east",
+  "nodes": [
+    {
+      "name": "gpu-east-a",
+      "labels": {
+        "nvidia.com/gpu.present": "true",
+        "topology.kubernetes.io/zone": "east"
+      },
+      "allocatable": {
+        "nvidia.com/gpu": "8"
+      },
+      "capacity": {
+        "nvidia.com/gpu": "8"
+      },
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": "KubeletReady",
+          "message": "Kubelet is ready"
+        }
+      ],
+      "taints": [],
+      "unschedulable": false
+    },
+    {
+      "name": "gpu-east-b",
+      "labels": {
+        "nvidia.com/gpu.present": "true",
+        "topology.kubernetes.io/zone": "east"
+      },
+      "allocatable": {
+        "nvidia.com/gpu": "8"
+      },
+      "capacity": {
+        "nvidia.com/gpu": "8"
+      },
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": "KubeletReady",
+          "message": "Kubelet is ready"
+        }
+      ],
+      "taints": [],
+      "unschedulable": false
+    }
+  ],
+  "pods": [
+    {
+      "namespace": "training",
+      "name": "trainer-rank-0",
+      "node": "gpu-east-a",
+      "phase": "Running",
+      "labels": {
+        "app": "trainer"
+      },
+      "owners": [],
+      "gpu_requests": {
+        "nvidia.com/gpu": "4"
+      },
+      "containers": [
+        {
+          "name": "trainer",
+          "ready": true,
+          "restart_count": 0
+        }
+      ],
+      "conditions": [],
+      "pvc_claims": [],
+      "node_selector": {},
+      "tolerations": []
+    },
+    {
+      "namespace": "training",
+      "name": "trainer-rank-1",
+      "node": "gpu-east-b",
+      "phase": "Running",
+      "labels": {
+        "app": "trainer"
+      },
+      "owners": [],
+      "gpu_requests": {
+        "nvidia.com/gpu": "4"
+      },
+      "containers": [
+        {
+          "name": "trainer",
+          "ready": true,
+          "restart_count": 0
+        }
+      ],
+      "conditions": [],
+      "pvc_claims": [],
+      "node_selector": {},
+      "tolerations": []
+    }
+  ],
+  "services": [],
+  "endpoint_slices": [],
+  "deployments": [],
+  "replica_sets": [],
+  "ingresses": [],
+  "network_policies": [],
+  "pvs": [],
+  "pvcs": [],
+  "events": [],
+  "signals": [
+    {
+      "metric": "nccl_timeout_count",
+      "value": 2,
+      "resource": "Pod/training/trainer-rank-0",
+      "source": "fixture-nccl-doctor",
+      "observed_at": "2026-10-28T20:12:00Z"
+    },
+    {
+      "metric": "rdma_retransmit_rate",
+      "value": 0.075,
+      "resource": "Node/gpu-east-b",
+      "source": "fixture-datapath-doctor",
+      "observed_at": "2026-10-28T20:12:00Z"
+    },
+    {
+      "metric": "pfc_pause_ms_5m",
+      "value": 1600,
+      "resource": "Node/gpu-east-b",
+      "source": "fixture-fabric-monitor",
+      "observed_at": "2026-10-28T20:12:00Z"
+    }
+  ],
+  "schema_version": 2,
+  "generated_at": "2026-10-28T20:12:00Z",
+  "collection_errors": []
+}

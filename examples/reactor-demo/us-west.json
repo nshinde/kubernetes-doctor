@@ -1,0 +1,364 @@
+{
+  "context": "reactor-demo-us-west",
+  "nodes": [
+    {
+      "name": "gpu-west-a",
+      "labels": {
+        "nvidia.com/gpu.present": "true",
+        "topology.kubernetes.io/zone": "west"
+      },
+      "allocatable": {
+        "nvidia.com/gpu": "8"
+      },
+      "capacity": {
+        "nvidia.com/gpu": "8"
+      },
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "False",
+          "reason": "KubeletNotReady",
+          "message": "Kubelet reports GPU driver resets; node readiness degraded"
+        }
+      ],
+      "taints": [],
+      "unschedulable": false
+    },
+    {
+      "name": "gpu-west-b",
+      "labels": {
+        "nvidia.com/gpu.present": "true",
+        "topology.kubernetes.io/zone": "west"
+      },
+      "allocatable": {
+        "nvidia.com/gpu": "4"
+      },
+      "capacity": {
+        "nvidia.com/gpu": "4"
+      },
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": "KubeletReady",
+          "message": "Kubelet is ready"
+        }
+      ],
+      "taints": [
+        {
+          "key": "reserved",
+          "value": "interactive",
+          "effect": "NoSchedule"
+        }
+      ],
+      "unschedulable": false
+    },
+    {
+      "name": "cpu-west-c",
+      "labels": {
+        "nvidia.com/gpu.present": "false",
+        "topology.kubernetes.io/zone": "west"
+      },
+      "allocatable": {},
+      "capacity": {},
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True",
+          "reason": "KubeletReady",
+          "message": "Kubelet is ready"
+        }
+      ],
+      "taints": [],
+      "unschedulable": false
+    }
+  ],
+  "pods": [
+    {
+      "namespace": "inference",
+      "name": "world-model-7db-a",
+      "node": "gpu-west-a",
+      "phase": "Running",
+      "labels": {
+        "app": "world-model",
+        "tier": "inference"
+      },
+      "owners": [
+        {
+          "kind": "ReplicaSet",
+          "name": "world-model-7db"
+        }
+      ],
+      "gpu_requests": {
+        "nvidia.com/gpu": "4"
+      },
+      "containers": [
+        {
+          "name": "engine",
+          "ready": false,
+          "restart_count": 7,
+          "waiting_reason": "CrashLoopBackOff",
+          "waiting_message": "back-off restarting engine",
+          "last_terminated_reason": "OOMKilled"
+        }
+      ],
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "False",
+          "reason": "ContainersNotReady"
+        }
+      ],
+      "pvc_claims": [
+        "model-cache"
+      ],
+      "node_selector": {},
+      "tolerations": []
+    },
+    {
+      "namespace": "inference",
+      "name": "world-model-7db-b",
+      "node": null,
+      "phase": "Pending",
+      "labels": {
+        "app": "world-model",
+        "tier": "inference"
+      },
+      "owners": [
+        {
+          "kind": "ReplicaSet",
+          "name": "world-model-7db"
+        }
+      ],
+      "gpu_requests": {
+        "nvidia.com/gpu": "8"
+      },
+      "containers": [],
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "False",
+          "reason": "Unschedulable",
+          "message": "0/3 nodes are available: 1 Insufficient nvidia.com/gpu, 1 untolerated taint, 1 NotReady node"
+        }
+      ],
+      "pvc_claims": [],
+      "node_selector": {},
+      "tolerations": []
+    },
+    {
+      "namespace": "inference",
+      "name": "gateway-5d4-a",
+      "node": "cpu-west-c",
+      "phase": "Running",
+      "labels": {
+        "app": "gateway"
+      },
+      "owners": [
+        {
+          "kind": "ReplicaSet",
+          "name": "gateway-5d4"
+        }
+      ],
+      "gpu_requests": {},
+      "containers": [
+        {
+          "name": "proxy",
+          "ready": true,
+          "restart_count": 0
+        }
+      ],
+      "conditions": [
+        {
+          "type": "Ready",
+          "status": "True"
+        }
+      ],
+      "pvc_claims": [],
+      "node_selector": {},
+      "tolerations": []
+    }
+  ],
+  "services": [
+    {
+      "namespace": "inference",
+      "name": "model-server",
+      "type": "ClusterIP",
+      "selector": {
+        "app": "world-model"
+      },
+      "publish_not_ready_addresses": false
+    },
+    {
+      "namespace": "inference",
+      "name": "gateway",
+      "type": "ClusterIP",
+      "selector": {
+        "app": "gateway"
+      },
+      "publish_not_ready_addresses": false
+    }
+  ],
+  "endpoint_slices": [
+    {
+      "namespace": "inference",
+      "name": "model-server-eps",
+      "service": "model-server",
+      "endpoints": [
+        {
+          "target_kind": "Pod",
+          "target_name": "world-model-7db-a",
+          "ready": false,
+          "terminating": false,
+          "addresses": [
+            "10.42.0.11"
+          ]
+        }
+      ]
+    },
+    {
+      "namespace": "inference",
+      "name": "gateway-eps",
+      "service": "gateway",
+      "endpoints": [
+        {
+          "target_kind": "Pod",
+          "target_name": "gateway-5d4-a",
+          "ready": true,
+          "terminating": false,
+          "addresses": [
+            "10.42.0.20"
+          ]
+        }
+      ]
+    }
+  ],
+  "deployments": [
+    {
+      "namespace": "inference",
+      "name": "world-model",
+      "replicas": 2,
+      "available_replicas": 0,
+      "owners": []
+    },
+    {
+      "namespace": "inference",
+      "name": "gateway",
+      "replicas": 1,
+      "available_replicas": 1,
+      "owners": []
+    }
+  ],
+  "replica_sets": [
+    {
+      "namespace": "inference",
+      "name": "world-model-7db",
+      "replicas": 2,
+      "available_replicas": 0,
+      "owners": [
+        {
+          "kind": "Deployment",
+          "name": "world-model"
+        }
+      ]
+    },
+    {
+      "namespace": "inference",
+      "name": "gateway-5d4",
+      "replicas": 1,
+      "available_replicas": 1,
+      "owners": [
+        {
+          "kind": "Deployment",
+          "name": "gateway"
+        }
+      ]
+    }
+  ],
+  "ingresses": [
+    {
+      "namespace": "inference",
+      "name": "world-model-api",
+      "services": [
+        "model-server",
+        "gateway"
+      ]
+    }
+  ],
+  "network_policies": [
+    {
+      "namespace": "inference",
+      "name": "isolate-model",
+      "pod_selector": {
+        "app": "world-model"
+      },
+      "policy_types": [
+        "Ingress"
+      ]
+    }
+  ],
+  "pvcs": [
+    {
+      "namespace": "inference",
+      "name": "model-cache",
+      "phase": "Bound",
+      "volume_name": "pvc-model-cache",
+      "storage_class": "fast-nvme"
+    }
+  ],
+  "pvs": [
+    {
+      "name": "pvc-model-cache",
+      "phase": "Bound",
+      "storage_class": "fast-nvme",
+      "claim_namespace": "inference",
+      "claim_name": "model-cache"
+    }
+  ],
+  "events": [
+    {
+      "namespace": "inference",
+      "object_kind": "Pod",
+      "object_name": "world-model-7db-b",
+      "reason": "FailedScheduling",
+      "message": "0/3 available: Insufficient nvidia.com/gpu; untolerated taint",
+      "type": "Warning",
+      "count": 8
+    },
+    {
+      "namespace": "inference",
+      "object_kind": "Pod",
+      "object_name": "world-model-7db-a",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: upstream connection refused",
+      "type": "Warning",
+      "count": 20
+    }
+  ],
+  "signals": [
+    {
+      "metric": "gpu_xid_errors",
+      "value": 1,
+      "resource": "Node/gpu-west-a",
+      "source": "fixture-dcgm",
+      "observed_at": "2026-10-28T20:12:00Z"
+    },
+    {
+      "metric": "frame_p99_ms",
+      "value": 95,
+      "resource": "Service/inference/model-server",
+      "source": "fixture-slo",
+      "observed_at": "2026-10-28T20:12:00Z"
+    },
+    {
+      "metric": "session_disconnects_5m",
+      "value": 11,
+      "resource": "Service/inference/model-server",
+      "source": "fixture-session-metrics",
+      "observed_at": "2026-10-28T20:12:00Z"
+    }
+  ],
+  "schema_version": 2,
+  "generated_at": "2026-10-28T20:12:00Z",
+  "collection_errors": []
+}
